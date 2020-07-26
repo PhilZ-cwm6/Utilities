@@ -8,7 +8,7 @@
         <string name="msgs_file_select_edit_dlg_cancel">Отменить</string>
         <string name="msgs_file_select_edit_dlg_filename">Имя файла</string>
         <string name="msgs_file_select_edit_dlg_dir_name">Название каталога</string>
-        <string name="msgs_file_select_edit_dlg_dir_created">%создал</string>
+        <string name="msgs_file_select_edit_dlg_dir_created">%s создал</string>
         <string name="msgs_file_select_edit_dlg_dir_not_created">%s не удалось создать</string>
         <string name="msgs_file_select_edit_dlg_dir_create_file">Создать новый файл</string>
         <string name="msgs_file_select_edit_dlg_filename_not_specified">Имя файла не указано</string>
@@ -27,10 +27,12 @@
         <string name="msgs_common_dialog_information">Информация</string>
         <string name="msgs_common_dialog_warning">Предупреждение</string>
         <string name="msgs_common_dialog_error">Ошибка</string>
+        <string name="msgs_common_dialog_danger">Опасный</string>
         <string name="msgs_common_dialog_ok">OK</string>
         <string name="msgs_common_dialog_cancel">Отменить</string>
         <string name="msgs_common_dialog_canceling">Отмена</string>
         <string name="msgs_common_dialog_save">Сохранить</string>
+        <string name="msgs_common_dialog_confirm">Подтвердите </string>
         <string name="msgs_common_dialog_add">Добавить</string>
         <string name="msgs_common_dialog_search">Поиск</string>
         <string name="msgs_common_dialog_close">Закрыть</string>
