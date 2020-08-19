@@ -45,7 +45,7 @@ public class SafManager {
     }
 
     private void putInfoMessage(String msg) {
-        slf4jLog.info(msg);
+        slf4jLog.debug(msg);
     }
 
     private String mLastErrorMessage="";
@@ -169,7 +169,47 @@ public class SafManager {
         return result;
     }
 
+    public String getSdcardUuid() {
+        return sdcardRootUuid;
+    }
+
+    public String getUsbUuid() {
+        return usbRootUuid;
+    }
     public void loadSafFile() {
+        if (Build.VERSION.SDK_INT<=29) loadSafFileApi29();
+        else loadSafFileApi30();
+    }
+
+    private void loadSafFileApi30() {
+        sdcardRootDirectory=UNKNOWN_SDCARD_DIRECTORY;
+        sdcardRootSafFile=null;
+        sdcardRootUuid=null;
+        ArrayList<String> sdcard_uuids=getSdcardUuidFromStorageManager(mContext, true);
+        if (sdcard_uuids.size()>0) {
+            for(String item:sdcard_uuids) {
+                if (isFilePathExists("/storage/"+item, true)) {
+                    sdcardRootDirectory="/storage/"+item;
+                    sdcardRootUuid=item;
+                }
+            }
+        }
+
+        usbRootDirectory=UNKNOWN_USB_DIRECTORY;
+        usbRootSafFile=null;
+        usbRootUuid=null;
+        ArrayList<String> usb_uuids=getUsbUuidFromStorageManager(mContext, true);
+        if (usb_uuids.size()>0) {
+            for(String item:usb_uuids) {
+                if (isFilePathExists("/storage/"+item, true)) {
+                    usbRootDirectory="/storage/"+item;
+                    usbRootUuid=item;
+                }
+            }
+        }
+    }
+
+    private void loadSafFileApi29() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         String uuid_list=prefs.getString(SDCARD_UUID_KEY, "");
         sdcardRootDirectory=UNKNOWN_SDCARD_DIRECTORY;
@@ -181,8 +221,8 @@ public class SafManager {
             for(String uuid:uuid_array) {
                 if (!isUsbUuid(uuid)) {
                     SafFile sf= SafFile.fromTreeUri(mContext, Uri.parse("content://com.android.externalstorage.documents/tree/"+uuid+"%3A"));
-                    if (sf!=null && sf.getName()!=null) {
-                        sdcardRootUuid=uuid;
+                    sdcardRootUuid=uuid;
+                    if ((sf!=null && sf.getName()!=null)) {
                         String esd="";
                         if (Build.VERSION.SDK_INT>=23) {//for Huawei mediapad
                             esd="/storage/"+uuid;
@@ -211,12 +251,12 @@ public class SafManager {
             for(String uuid:uuid_array) {
                 if (isUsbUuid(uuid)) {
                     SafFile sf= SafFile.fromTreeUri(mContext, Uri.parse("content://com.android.externalstorage.documents/tree/"+uuid+"%3A"));
+                    usbRootUuid=uuid;
                     if (sf!=null && sf.getName()!=null) {
                         File ufp=new File("/storage/"+uuid);
                         if (ufp.exists()) {
                             usbRootDirectory="/storage/"+uuid;
                             usbRootSafFile=sf;
-                            usbRootUuid=uuid;
                             putInfoMessage("loadSafFile USB uuid found, uuid="+uuid);
                         } else {
                             putErrorMessage("loadSafFile USB uuid found but mount point does not exists, uuid="+uuid);
