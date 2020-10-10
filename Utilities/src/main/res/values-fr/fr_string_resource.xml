@@ -81,6 +81,7 @@
         <string name="msgs_log_file_list_confirm_send_log_password_and_confirm_password_not_matched">Le mot de passe et celui de confirmation ne correspondent pas.</string>
         <string name="msgs_log_file_list_confirm_send_log_send_password_title">Envoi du mot de passe des fichiers journaux</string>
         <string name="msgs_log_file_list_confirm_send_log_send_password_message">Voulez-vous envoyer le mot de passe du fichier journal au développeur ?</string>
+        <string name="msgs_log_file_list_confirm_send_log_send_password_button_title">Envoyer le mot de passe du fichier ZIP</string>
         <string name="msgs_log_file_list_confirm_send_log_send">Envoyer</string>
         <string name="msgs_log_file_list_confirm_send_log_preview">Aperçu</string>
         <string name="msgs_log_file_list_confirm_send_log_msg">Envoyez le fichier journal au développeur par courriel.\n1.Appuyez sur le bouton Aperçu pour consulter le contenu du fichier temp_log.txt (lorsque l\'écran de sélection de l\'application pour afficher le fichier texte apparaît, veuillez sélectionner l\'application préférée).\n2.Après avoir confirmé le contenu à envoyer, appuyez sur le bouton Envoyer et sélectionnez E-Mail dans la boîte de dialogue qui s\'affiche.\n3.Saisissez votre problème/question dans le corps du courriel et envoyez le messages (les journaux sont zippés et envoyés en pièce jointe).</string>
@@ -97,7 +98,7 @@
         <string name="msgs_password_input_preference_conf_not_specified">Le mot de passe de confirmation n\'a pas été saisi.</string>
         <string name="msgs_password_input_preference_less_than_min_length">Le mot de passe doit comporter au moins %s caractères</string>
     <!-- msgs_ntstatus -->
-        <string name="msgs_ntstatus_common_info" formatted="false">Utilisateur=%s, Etat du réseau=0x%x, Serveur distant=%s, Nom du réseau=%s, Localisation du fichier=%s</string>
+        <string name="msgs_ntstatus_common_info">Utilisateur=%1$s, Etat du réseau=0x%2$x, Serveur distant=%3$s, Nom du réseau=%4$s, Localisation du fichier=%5$s</string>
         <string name="msgs_ntstatus_unsuccesful">Un dispositif relié au système ne fonctionne pas.</string>
         <string name="msgs_ntstatus_access_denied">L\'accès est refusé.</string>
         <string name="msgs_ntstatus_logon_failure_unknown_user_name_or_bad_password">Échec de connexion : nom d\'utilisateur inconnu ou mot de passe erroné.</string>
