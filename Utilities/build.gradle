@@ -9,7 +9,7 @@ android {
         abortOnError false
     }
 
-    def verName="1.0.17"
+    def verName="1.0.18"
     def verCode=2
     defaultConfig {
         minSdkVersion 7
@@ -17,6 +17,32 @@ android {
     }
 
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
+            libraryVariants.all { variant ->
+                if (variant.buildType.name.equals("debug")) {
+                    variant.outputs.all {
+                        def mod_name = "${rootProject.name}"
+                        def fileExtension= outputFileName.toString().substring(outputFileName.toString().lastIndexOf(".")+1)
+                        def newName = "${mod_name}-${verName}.${fileExtension}"
+                        outputFileName = newName;
+                    }
+
+                    task copy_aar_debug(type: Copy) {
+                        from 'build/outputs/aar'
+                        into '../release/'
+                        include 'Utilities*.aar'
+                    }
+
+                    afterEvaluate {
+                        assembleDebug.finalizedBy(copy_aar_debug)
+                    }
+
+                }
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
@@ -24,14 +50,22 @@ android {
             libraryVariants.all { variant ->
                 if (variant.buildType.name.equals("release")) {
                     variant.outputs.all {
-//                        def mod_name = variant.getPackageLibrary().baseName
                         def mod_name = "${rootProject.name}"
                         def fileExtension= outputFileName.toString().substring(outputFileName.toString().lastIndexOf(".")+1)
-//                        def newName = "${mod_name}_${verName}_${verCode}.${fileExtension}"
                         def newName = "${mod_name}-${verName}.${fileExtension}"
-                        outputFileName = "../../../../release/"+newName
-                        println(newName)
+                        outputFileName = newName;
                     }
+
+                    task copy_aar_release(type: Copy) {
+                        from 'build/outputs/aar'
+                        into '../release/'
+                        include 'Utilities*.aar'
+                    }
+
+                    afterEvaluate {
+                        assembleRelease.finalizedBy(copy_aar_release)
+                    }
+
                 }
             }
         }
@@ -46,6 +80,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
     implementation files('libs/ImageViewTouch-1.0.1-Mod.jar')
+
 //    implementation files('libs/jcifs-1.3.17_patch.jar')
     implementation files('libs/juniversalchardet-1.0.3.jar')
     implementation files('libs/zip4j-1.3.2-mod-01.jar')

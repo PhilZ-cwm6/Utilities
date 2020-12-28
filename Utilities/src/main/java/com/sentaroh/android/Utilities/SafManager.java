@@ -1,3 +1,25 @@
+/*
+The MIT License (MIT)
+Copyright (c) 2015 Sentaroh
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+*/
 package com.sentaroh.android.Utilities;
 
 import android.content.ContentProviderClient;
@@ -39,6 +61,16 @@ public class SafManager {
     private String sdcardRootUuid=null;
 
     private static Logger slf4jLog = LoggerFactory.getLogger(SafManager.class);
+
+    private ArrayList<String>usbUuidList=new ArrayList<String>();
+
+    public void setUsbUuidList(ArrayList<String> list) {
+        usbUuidList=list;
+    }
+
+    public ArrayList<String> getUsbUuidList() {
+        return usbUuidList;
+    }
 
     private void putDebugMessage(String msg) {
         slf4jLog.debug(msg);
@@ -475,9 +507,21 @@ public class SafManager {
 //                String path = (String) getPath.invoke(volume);
                 putInfoMessage("getSdcardUuidFromStorageManager uuid found="+uuid+", Label="+label);
 //                if (uuid!=null && (!primary && !label.toLowerCase().contains("usb"))) {
-                if (uuid!=null && (removable && !label.toLowerCase().contains("usb"))) {
-                    uuids.add(uuid);
-                    putInfoMessage("getSdcardUuidFromStorageManager added="+uuid);
+                if (uuid!=null && removable) {
+                    if (!label.toLowerCase().contains("usb")) {
+                        boolean found=false;
+                        for(String item:usbUuidList) {
+                            if (uuid.equals(item)) {
+                                found=true;
+                                putInfoMessage("getSdcardUuidFromStorageManager SDCARD UUID ignored because USB UUID specified, UUID="+uuid);
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            uuids.add(uuid);
+                            putInfoMessage("getSdcardUuidFromStorageManager added="+uuid);
+                        }
+                    }
                 }
             }
         } catch (ClassCastException e) {
@@ -536,7 +580,7 @@ public class SafManager {
             Object[] volumeList = (Object[]) getVolumeList.invoke(sm);
             for (Object volume : volumeList) {
 //                Method getPath = volume.getClass().getDeclaredMethod("getPath");
-//	            Method isRemovable = volume.getClass().getDeclaredMethod("isRemovable");
+	            Method isRemovable = volume.getClass().getDeclaredMethod("isRemovable");
                 Method isPrimary = volume.getClass().getDeclaredMethod("isPrimary");
                 Method getUuid = volume.getClass().getDeclaredMethod("getUuid");
                 Method toString = volume.getClass().getDeclaredMethod("toString");
@@ -544,11 +588,22 @@ public class SafManager {
                 Method getLabel = volume.getClass().getDeclaredMethod("getUserLabel");
                 String uuid=(String) getUuid.invoke(volume);
                 String label=(String) getLabel.invoke(volume);
+                boolean removable=(boolean)isRemovable.invoke(volume);
 //                String path = (String) getPath.invoke(volume);
                 putInfoMessage("getUsbUuidFromStorageManager uuid found="+uuid+", Label="+label);
-                if (uuid!=null && ( label.toLowerCase().contains("usb") )) {
-                    uuids.add(uuid);
-                    putInfoMessage("getUsbUuidFromStorageManager added="+uuid);
+                if (uuid!=null && removable) {
+                    if (label.toLowerCase().contains("usb")) {
+                        uuids.add(uuid);
+                        putInfoMessage("getUsbUuidFromStorageManager added="+uuid);
+                    } else {
+                        for(String item:usbUuidList) {
+                            if (uuid.equals(item)) {
+                                uuids.add(uuid);
+                                putInfoMessage("getUsbUuidFromStorageManager added by USB UUID list UUID="+uuid);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         } catch (ClassCastException e) {
